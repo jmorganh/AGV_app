@@ -66,13 +66,17 @@ app.controller('HomeController', function ($scope, $rootScope, $window, FLIDevic
       .then(device => {
           // Human-readable name of the device.
           console.log(device.name);
-          $scope.d.name = device.name;
           console.log(device.id);
-          $scope.d.address = device;
+          $scope.$apply(function () {
+            $scope.d.name = device.name;
+            $scope.d.address = device.id;
+          });
+          console.log($scope.d);
           // Attempts to connect to remote GATT Server.
           return device.gatt.connect();
       })
-      .then(server => { /* ... */ })
+      .then(server => { /* ... */ 
+      })
       .catch(error => { console.error(error);
     });
   }
