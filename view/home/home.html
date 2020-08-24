@@ -9,51 +9,49 @@
   </div>
 
   <p>
-    <button class="mbutton" onclick="readBatteryLevel()">List Bluetooth device's</button>
+    <button class="mbutton" ng-click="connectBluetooth()">List Bluetooth devices</button>
   </p>
 
   <p id="target"></p>
+
+  <div class="row" style="text-align:center;">
+    <h2>{{d.name}} {{d.address}}</h2>
+  </div>
+
+  <div class="row">
+        <div style="text-align:center; width: 10%; display: inline-block;">
+          <button class="mbutton" ng-click="FLIDevice.gotoPosition(d, 100)">Closed</button>
+          <button class="mbutton" ng-click="FLIDevice.gotoPosition(d, 75)">25% Open</button>
+          <button class="mbutton" ng-click="FLIDevice.gotoPosition(d, 50)">Half Open</button>
+          <button class="mbutton" ng-click="FLIDevice.gotoPosition(d, 25)">75% Open</button>
+          <button class="mbutton" ng-click="FLIDevice.gotoPosition(d, 0)">Full Open</button>
+        </div>
+        <div style="text-align:center; width: 10%; display: inline-block;">
+          <button class="mbutton" ng-click='FLIDevice.sendIt(d.address,"<timestamp>")'>Get timestamp</button>
+
+          <button class="mbutton" ng-click='FLIDevice.sendIt(d.address, "<date>")'>Get Date</button>
+          <button class="mbutton" ng-click='FLIDevice.sendIt(d.address, "<time>")'>Get Time</button>
+            <button class="mbutton" ng-click='FLIDevice.setTime(d)'>Set Time</button>
+      </div>
+        <div style="text-align:center; width: 25%; display: inline-block;">
+          <button class="mbutton" ng-click="FLIDevice.openCloseA(d)">openCloseA</button>
+          <button class="mbutton" ng-click="FLIDevice.openCloseB(d)">openCloseB</button>
+          <button class="mbutton" ng-click="FLIDevice.gotoPosition(d, d.position)">Goto Position {{d.position}}</button>
+          <button  class="mbutton" ng-click='FLIDevice.sendIt(d.address, "<readanalog>")'>AnalogRead</button><br/>
+          <button  class="mbutton" ng-click="FLIDevice.disconnect(d);">Disconnect</button>
+      </div>
+
+        <div style="text-align:center; width: 45%; display: inline-block;" >
+
+          <input class="mbutton" type='number' ng-model="d.position"/><br/>
+          Msg: {{d.lastMessage}}
+          <button class="mbutton" ng-click="FLIDevice.setPositionHome(d)">Reset Home</button>
+        </div>
+
+  </div>
+
+  <div class="row" >
+    <button ng-click="FLIDevice.connect(d);">Connect to {{d.name}} - {{d.address}}</button>
+  </div>
+
 </div>
-
-   <!-- <div ng-repeat="d in FLIDevice.devices" style="margin:10px; padding:10px; background-color:white;">
-    <div class="row" style="text-align:center;">
-      <h2>{{d.name}} {{d.address}}</h2>
-    </div>
-
-    <div class="row">
-          <div style="text-align:center; width: 10%; display: inline-block;">
-            <button class="mbutton" ng-click="FLIDevice.gotoPosition(d, 100)">Closed</button>
-            <button class="mbutton" ng-click="FLIDevice.gotoPosition(d, 75)">25% Open</button>
-            <button class="mbutton" ng-click="FLIDevice.gotoPosition(d, 50)">Half Open</button>
-            <button class="mbutton" ng-click="FLIDevice.gotoPosition(d, 25)">75% Open</button>
-            <button class="mbutton" ng-click="FLIDevice.gotoPosition(d, 0)">Full Open</button>
-         </div>
-         <div style="text-align:center; width: 10%; display: inline-block;">
-           <button class="mbutton" ng-click='FLIDevice.sendIt(d.address,"<timestamp>")'>Get timestamp</button>
-
-           <button class="mbutton" ng-click='FLIDevice.sendIt(d.address, "<date>")'>Get Date</button>
-           <button class="mbutton" ng-click='FLIDevice.sendIt(d.address, "<time>")'>Get Time</button>
-             <button class="mbutton" ng-click='FLIDevice.setTime(d)'>Set Time</button>
-        </div>
-         <div style="text-align:center; width: 25%; display: inline-block;">
-           <button class="mbutton" ng-click="FLIDevice.openCloseA(d)">openCloseA</button>
-           <button class="mbutton" ng-click="FLIDevice.openCloseB(d)">openCloseB</button>
-           <button class="mbutton" ng-click="FLIDevice.gotoPosition(d, d.position)">Goto Position {{d.position}}</button>
-           <button  class="mbutton" ng-click='FLIDevice.sendIt(d.address, "<readanalog>")'>AnalogRead</button><br/>
-           <button  class="mbutton" ng-click="FLIDevice.disconnect(d);">Disconnect</button>
-        </div>
-
-          <div style="text-align:center; width: 45%; display: inline-block;" >
-
-            <input class="mbutton" type='number' ng-model="d.position"/><br/>
-            Msg: {{d.lastMessage}}
-            <button class="mbutton" ng-click="FLIDevice.setPositionHome(d)">Reset Home</button>
-          </div>
-
-    </div>
-
-    <div class="row" >
-      <button ng-click="FLIDevice.connect(d);">Connect to {{d.name}} - {{d.address}}</button>
-    </div>
-
-   </div> -->

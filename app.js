@@ -47,6 +47,36 @@ app.controller('HomeController', function ($scope, $rootScope, $window, FLIDevic
 
   $scope.FLIDevice = FLIDevice;
 
+  $scope.d = {};
+
+  $scope.d.name = "bluetooth device";
+  
+  $scope.connectBluetooth = function() {
+    var $target = document.getElementById('target');
+  
+
+    if (!('bluetooth' in navigator)) {
+      $target.innerText = 'Bluetooth API not supported.';
+      return;
+    }
+
+    navigator.bluetooth.requestDevice({
+      filters: [{namePrefix: 'HMSoft'}]
+      })
+      .then(device => {
+          // Human-readable name of the device.
+          console.log(device.name);
+          $scope.d.name = device.name;
+          console.log(device.id);
+          $scope.d.address = device;
+          // Attempts to connect to remote GATT Server.
+          return device.gatt.connect();
+      })
+      .then(server => { /* ... */ })
+      .catch(error => { console.error(error);
+    });
+  }
+
 });
 
 
@@ -314,28 +344,8 @@ service.writeRelay = function(address, command){
   return service;
 });
 
-
 function readBatteryLevel() {
-  var $target = document.getElementById('target');
-
-  if (!('bluetooth' in navigator)) {
-    $target.innerText = 'Bluetooth API not supported.';
-    return;
-  }
-
-  navigator.bluetooth.requestDevice({
-    acceptAllDevices: true,
-    })
-    .then(device => {
-        // Human-readable name of the device.
-        console.log(device.name);
-        console.log(device.id);
-        // Attempts to connect to remote GATT Server.
-        return device.gatt.connect();
-    })
-    .then(server => { /* ... */ })
-    .catch(error => { console.error(error);
-  });
+  
 
   // navigator.bluetooth.requestDevice({
   //     filters: [{
