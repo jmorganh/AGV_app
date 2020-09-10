@@ -1,409 +1,305 @@
-
-document.addEventListener('deviceready', function onDeviceReady() {
-  console.log('DEVICE IS READY  ---- angular.bootstrap');
-    angular.bootstrap(document, ['BluKee']);
-}, false);
-
-
-if('serviceWorker'in navigator) {
-    window.addEventListener('load', () =>{
-        navigator.serviceWorker.register('service-worker.js')
-        .then(registration =>{
-            console.log('service worker is registered', registration);
-        })
-        .catch(err => {
-            console.error('Registration failed', err
-            )
-        })
-    });
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker
+      .register("./svcworker.js")
+      .then(res => console.log("service worker registered"))
+      .catch(err => console.log("service worker not registered", err))
+  })
 }
 
-var app = angular.module('BluKee', ['ui.router']);
+let deferredPrompt; // Allows to show the install prompt
+const installButton = document.getElementById("installBtn");
 
-app.config( function( $provide, $stateProvider, $urlRouterProvider, $compileProvider) {
-  $stateProvider
-  .state('splash', {
-    url: '/splash',
-    views: {
-        'contentMain': {templateUrl: 'view/splash/splash.html'}
-    }})
-  .state('home', {
-    url: '/',
-    views: {
-        'contentMain': {templateUrl: 'view/home/home.html', controller: 'HomeController'}
-    }});
-        // var currentImgSrcSanitizationWhitelist = $compileProvider.imgSrcSanitizationWhitelist();
-        // var newImgSrcSanitizationWhiteList = currentImgSrcSanitizationWhitelist.toString().slice(0,-1)
-        // + '|chrome-extension:|data:image|https?:'
-        // +currentImgSrcSanitizationWhitelist.toString().slice(-1);
-        //
-        // $compileProvider.imgSrcSanitizationWhitelist(newImgSrcSanitizationWhiteList);
-  $urlRouterProvider.otherwise("home");
+window.addEventListener("beforeinstallprompt", e => {
+  console.log("beforeinstallprompt fired");
+  // Prevent Chrome 76 and earlier from automatically showing a prompt
+  e.preventDefault();
+  // Stash the event so it can be triggered later.
+  deferredPrompt = e;
+  // Show the install button
+  installButton.hidden = false;
+  installButton.addEventListener("click", installApp);
 });
 
-app.controller('HomeController', function ($scope, $rootScope, $window, FLIDevice) {
+function installApp() {
+     // Show the prompt
+  deferredPrompt.prompt();
+  installButton.disabled = true;
 
-  window.scope = $scope;
-
-  $scope.FLIDevice = FLIDevice;
-
-  $scope.d = {};
-
-  $scope.d.name = "bluetooth device";
-  
-  $scope.connectBluetooth = function() {
-    var $target = document.getElementById('target');
-  
-
-    if (!('bluetooth' in navigator)) {
-      $target.innerText = 'Bluetooth API not supported.';
-      return;
+    // Wait for the user to respond to the prompt
+  deferredPrompt.userChoice.then(choiceResult => {
+    if (choiceResult.outcome === "accepted") {
+      console.log("PWA setup accepted");
+      installButton.hidden = true;
+    } else {
+      console.log("PWA setup rejected");
     }
-
-    navigator.bluetooth.requestDevice({
-      filters: [{namePrefix: 'HMSoft'}]
-      })
-      .then(device => {
-          // Human-readable name of the device.
-          console.log(device.name);
-          console.log(device.id);
-          $scope.$apply(function () {
-            $scope.d.name = device.name;
-            $scope.d.address = device.id;
-          });
-          console.log($scope.d);
-          // Attempts to connect to remote GATT Server.
-          return device.gatt.connect();
-      })
-      .then(server => { /* ... */ 
-      })
-      .catch(error => { console.error(error);
-    });
-  }
-
-});
-
-
-app.run(function($state, $rootScope, $timeout) {
-
-$state.transitionTo('splash');
-
-$timeout(function() {
-     $state.go('home');
-   }, 2000);
-
-
-var loginOptions = {
-  'scopes': 'profile email', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
-  'webClientId': '400876556290-dc0g5dc8us5r2f7u7fanj3nqjohim8si.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
-  'offline': true, // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
-};
-
-var successLoginHandler = function (obj) {
-  $state.transitionTo('home');
-  $rootScope.user = obj;
-  console.log(JSON.stringify(obj)); // do something useful instead of alerting
-};
-
-       $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-
-            // if (toState.authenticate && !AuthService.isAuthenticated()){
-            //   // User isn’t authenticated
-            //   console.log('User not authenticated, goto login screen.');
-            //   $state.transitionTo("login");
-            //   event.preventDefault();
-            // }
-            // $rootScope.state = toState.name;
-
-       });
-});
-
-
-
-function toUTF8Array(str) {
-  if(typeof str === 'object') return str;
-
-    var utf8 = [];
-    for (var i=0; i < str.length; i++) {
-        var charcode = str.charCodeAt(i);
-        if (charcode < 0x80) utf8.push(charcode);
-        else if (charcode < 0x800) {
-            utf8.push(0xc0 | (charcode >> 6),
-                      0x80 | (charcode & 0x3f));
-        }
-        else if (charcode < 0xd800 || charcode >= 0xe000) {
-            utf8.push(0xe0 | (charcode >> 12),
-                      0x80 | ((charcode>>6) & 0x3f),
-                      0x80 | (charcode & 0x3f));
-        }
-        // surrogate pair
-        else {
-            i++;
-            // UTF-16 encodes 0x10000-0x10FFFF by
-            // subtracting 0x10000 and splitting the
-            // 20 bits of 0x0-0xFFFFF into two halves
-            charcode = 0x10000 + (((charcode & 0x3ff)<<10)
-                      | (str.charCodeAt(i) & 0x3ff));
-            utf8.push(0xf0 | (charcode >>18),
-                      0x80 | ((charcode>>12) & 0x3f),
-                      0x80 | ((charcode>>6) & 0x3f),
-                      0x80 | (charcode & 0x3f));
-        }
-    }
-    return utf8;
-}
-
-
-app.factory('FLIDevice', function ($timeout, $interval) {
-
-  var FLIDevice = {}
-  var service = {devices:{}}
-  service.scan = function(){
-      var params = {
-        request:true,
-        allowDuplicates: true,
-        time: 10000
-      };
-      console.log("Start Scan: " + JSON.stringify(params));
-
-    };
-
-  var addDevice = function(device){
-      if(service.devices[device.address]){
-        device.connected = false;
-        return;
-      }
-      service.devices[device.address] = device;
-      console.log('ok, allow connection to '+device.name);
-  };
-
-  service.setTime = function(device){
-
-    var address = device.address;
-    var date = new Date();
-    var month = date.getMonth()+1;
-    var day = date.getDay();
-    var year = date.getYear()-100;
-    service.sendIt(address, "<set date "+month+" "+day+" "+year+">");
-
-    var hours = date.getHours();
-    var mins = date.getMinutes();
-    service.sendIt(address, "<set time "+hours+" "+mins+" 01>");
-  }
-
-  service.sendIt = function(address, bytes, responseRequest){
-            console.log("SENDING -- "+JSON.stringify(bytes));
-            var encodedString = bluetoothle.bytesToEncodedString(toUTF8Array(bytes));
-            var params = {
-              value: encodedString,
-              service:"ffe0",
-              characteristic:"ffe1",
-              address:address
-            };
-
-            if(!responseRequest) params.type = "noResponse";
-            console.log('write...'+ JSON.stringify(params));
-
-            return $cordovaBluetoothLE.write(params).then(function(result){
-              console.log('write success!!!!!'+ JSON.stringify(result));
-            }, function(result){
-              if(result.error == "isNotConnected"){
-                //Not Connected, we should remove out object
-                service.devices[result.address].connected = false;
-
-                $cordovaBluetoothLE.close({address:address});
-              }
-              console.log('write FAILED!!!!!'+ JSON.stringify(error));
-
-            });
-  };
-
-  service.disconnect = function(device){
-    return $cordovaBluetoothLE.disconnect({address: device.address}).then(function(){
-      device.connected = false;
-      $cordovaBluetoothLE.close({address:device.address});
-    });
-  };
-
-  service.connect = function(device){
-
-        console.log("Connect To Device: " + JSON.stringify(device));
-        var params = {address: device.address, timeout: 10000};
-
-        console.log("Connect : " + JSON.stringify(params));
-
-      return $cordovaBluetoothLE.connect(params).then(null, function(obj) {
-        console.log("Connect Error : " + JSON.stringify(obj));
-        //$rootScope.close(address); //Best practice is to close on connection error
-      }, function(obj) {
-        console.log("Connect Success : " + JSON.stringify(obj));
-
-        device.connected = true;
-
-        return $cordovaBluetoothLE.discover({
-            address: device.address
-          }).then(function(result){
-              console.log('Discover ' + JSON.stringify(result));
-
-              console.log('SUBSCRIBE ON ALL DISCOVERED DEVICES')
-              device.disover = result;
-              service.subscribe(device);
-          });
-      });
-  };
-
-  service.subscribe = function(device){
-      var address = device.address;
-      var params = {
-        service:"ffe0",
-        characteristic:"ffe1",
-        address:address
-      };
-
-      bluetoothle.subscribe(function(result){
-        if(result.status == "subscribedResult" && result.value){
-          var value = window.atob(result.value)
-          device.lastMessage = value;
-
-          console.log(value);
-
-        }else{
-          console.log('connected....?')
-        }
-      },function(result){
-        console.log('err',result);
-      },params);
-
-  };
-
-  service.gotoPosition = function(device, position){
-    //range zero to 650
-    if(position > 100) position = 100;
-    var newPos = (position * 6.5).toFixed(0)
-    service.sendIt(device.address,"<set pos "+newPos+">");
-  };
-
-
-  service.setPositionHome = function(device){
-    service.sendIt(device.address,"<set poshome>");
-  };
-
-
-
-
-
-
-
-
-////
-
-service.openCloseA = function(device){
-  service.writeRelay(device.address, 0x04);
-  setTimeout(function(){ service.writeRelay(device.address, 0x06); }, 500);
-};
-
-service.openCloseB = function(device){
-  service.writeRelay(device.address, 0x05);
-  setTimeout(function(){ service.writeRelay(device.address, 0x07); }, 500);
-};
-
-service.passCode = "12345678";
-service.newCode = "12345678";
-
-service.changeCode = function(address, passCode, newCode){
-  if(newCode.length != 8) {
-    console.log('bad code length!'); return;
-  }
-  service.passCode = passCode;
-  service.newCode = newCode;
-  var bytes = [0xC5,
-    0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
-    0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
-    0xAA];
-    for(var i=0; i < service.passCode.length; i++){
-      bytes[i+1] = service.passCode.charCodeAt(i);
-    }
-    for(var i=0; i < service.newCode.length; i++){
-      bytes[i+9] = service.newCode.charCodeAt(i);
-    }
-    return service.sendIt(address, bytes).then(function(){
-      console.log('SUCCESSFULLY CHANGED CODE FROM '+passCode+' TO '+newCode);
-      service.passCode = service.newCode;
-    });
-};
-
-service.writeRelay = function(address, command){
-
-  console.log('write relay request '+address+' '+command);
-  var bytes = [0xC5, command, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0xAA];
-  for(var i=0; i < service.passCode.length; i++){   bytes[i+2] = service.passCode.charCodeAt(i);   }
-  console.log("Passcode replaced Now send to Relay -- "+JSON.stringify(bytes));
-  return service.sendIt(address, bytes);
-};
-
-////
-
-
-
-  return service;
-});
-
-function readBatteryLevel() {
-  
-
-  // navigator.bluetooth.requestDevice({
-  //     filters: [{
-  //       services: ['battery_service']
-  //     }]
-  //   })
-  //   .then(function (device) {
-  //     return device.gatt.connect();
-  //   })
-  //   .then(function (server) {
-  //     return server.getPrimaryService('battery_service');
-  //   })
-  //   .then(function (service) {
-  //     return service.getCharacteristic('battery_level');
-  //   })
-  //   .then(function (characteristic) {
-  //     return characteristic.readValue();
-  //   })
-  //   .then(function (value) {
-  //     $target.innerHTML = 'Battery percentage is ' + value.getUint8(0) + '.';
-  //   })
-  //   .catch(function (error) {
-  //     $target.innerText = 'error found in catch -- ' + error;
-  //   });
-  };
-
-
-
-//install button for PWA app
-  let deferredPrompt;
-  const addBtn = document.querySelector('.add-button');
-  addBtn.style.display = 'none';
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent Chrome 67 and earlier from automatically showing the prompt
-    e.preventDefault();
-    // Stash the event so it can be triggered later.
-    deferredPrompt = e;
-    // Update UI to notify the user they can add to home screen
-    addBtn.style.display = 'block';
-
-    addBtn.addEventListener('click', (e) => {
-      // hide our user interface that shows our A2HS button
-      addBtn.style.display = 'none';
-      // Show the prompt
-      deferredPrompt.prompt();
-      // Wait for the user to respond to the prompt
-      deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the A2HS prompt');
-          } else {
-            console.log('User dismissed the A2HS prompt');
-          }
-          deferredPrompt = null;
-        });
-    });
+    installButton.disabled = false;
+    deferredPrompt = null;
   });
+}
+
+window.addEventListener("appinstalled", evt => {
+  console.log("appinstalled fired", evt);
+});
+
+var ChromeSamples = {
+  log: function() {
+    var line = Array.prototype.slice.call(arguments).map(function(argument) {
+      return typeof argument === 'string' ? argument : JSON.stringify(argument);
+    }).join(' ');
+
+    document.querySelector('#log').textContent += line + '\n';
+  },
+
+  clearLog: function() {
+    document.querySelector('#log').textContent = '';
+  },
+
+  setStatus: function(status) {
+    document.querySelector('#status').textContent = status;
+  },
+
+  setContent: function(newContent) {
+    var content = document.querySelector('#content');
+    while(content.hasChildNodes()) {
+      content.removeChild(content.lastChild);
+    }
+    content.appendChild(newContent);
+  }
+};
+
+let bleDevice = null;
+let characteristicCache = null;
+let readBuffer = '';
+
+function onButtonClick() {
+  log('Requesting Bluetooth Device...');
+  navigator.bluetooth.requestDevice({filters:[
+    {services: [0xFFE0]},         // notification (serial) service
+    {namePrefix: 'HMSoft'}
+  ]})
+  .then(device => {
+    log('> Name:      ' + device.name);
+    log('> Id:        ' + device.id);
+    log('> Connected: ' + device.gatt.connected);
+    bleDevice = device;  // save/cache for later, device is re-used
+    bleDevice.addEventListener('gattserverdisconnected', onDisconnected);
+    return connect();
+  })
+  .then(characteristic => startNotifications(characteristic))
+  .catch(error => {
+    log('Argh!1 ' + error);
+  });
+}
+
+//  .then(characteristic => startNotifications(characteristic))
+
+function connect() {
+  if (bleDevice.gatt.connected && characteristicCache) {
+    return Promise.resolve(characteristicCache);
+  }
+  log('Connecting to Bluetooth Device...');
+
+  return bleDevice.gatt.connect()
+  .then(server => {
+    log('> GATT connected=' + bleDevice.gatt.connected + ', get services..');
+        return server.getPrimaryService(0xFFE0);
+      }).
+      then(service => {
+        log('Service found, getting characteristic...');
+
+        return service.getCharacteristic(0xFFE1);
+      }).
+      then(characteristic => {
+        log('Characteristic found');
+        characteristicCache = characteristic;
+
+        return characteristicCache;
+  });
+}
+/*
+function connectDeviceAndCacheCharacteristic(device) {
+  if (device.gatt.connected && characteristicCache) {
+    return Promise.resolve(characteristicCache);
+  }
+
+  log('Connecting to GATT server...');
+
+  return device.gatt.connect().
+      then(server => {
+        log('GATT server connected, getting service...');
+
+        return server.getPrimaryService(0xFFE0);
+      }).
+      then(service => {
+        log('Service found, getting characteristic...');
+
+        return service.getCharacteristic(0xFFE1);
+      }).
+      then(characteristic => {
+        log('Characteristic found');
+        characteristicCache = characteristic;
+
+        return characteristicCache;
+      });
+} */
+
+function startNotifications(characteristic) {
+  log('Starting notifications...');
+
+  return characteristic.startNotifications().
+      then(() => {
+        log('Notifications started');
+        characteristic.addEventListener('characteristicvaluechanged',
+            handleCharacteristicValueChanged);
+      });
+}
+
+function handleCharacteristicValueChanged(event) {
+  let value = new TextDecoder().decode(event.target.value);
+
+  for (let c of value) {
+    if (c === '\n') {
+      let data = readBuffer.trim();
+      readBuffer = '';
+
+      if (data) {
+        log(data, 'in');       // receive(data);
+      }
+    }
+    else {
+      readBuffer += c;
+    }
+  }
+}
+
+function sendIt(data) {
+  data = String(data);
+
+  if (!data || !characteristicCache) {
+    return;
+  }
+
+  //data += '\n';
+
+  if (data.length > 20) {
+    let chunks = data.match(/(.|[\r\n]){1,20}/g);
+
+    writeToCharacteristic(characteristicCache, chunks[0]);
+
+    for (let i = 1; i < chunks.length; i++) {
+      setTimeout(() => {
+        writeToCharacteristic(characteristicCache, chunks[i]);
+      }, i * 100);
+    }
+  }
+  else {
+    characteristicCache.writeValue(new TextEncoder().encode(data));
+  }
+  log(data, 'out');
+}
+
+function setIt(data) {    // read input field from DOM and build command
+  data  = String(data);
+  input = String(document.getElementById("inpVar").value);
+
+  if (!data || !characteristicCache) {
+    return;
+  }
+
+  if(data === "time")
+    data = "<set time " + input + ">";
+  else
+    if(data === "position")
+      data = "<set pos " + input + ">";
+
+  characteristicCache.writeValue(new TextEncoder().encode(data));
+  log(data, 'out');
+}
+
+function writeToCharacteristic(characteristic, data) {
+  characteristic.writeValue(new TextEncoder().encode(data));
+}
+
+function onDisconnectButtonClick() {
+  if (!bleDevice) {
+    return;
+  }
+  log('Disconnecting from Bluetooth Device...');
+  if (bleDevice.gatt.connected) {
+    bleDevice.gatt.disconnect();
+  } else {
+    log('> Bluetooth Device is already disconnected');
+  }
+}
+
+function onDisconnected(event) {
+  // Object event.target is Bluetooth Device getting disconnected.
+  log('> Bluetooth Device disconnected');
+       // next ONLY if you want to try to auto-reconnect
+/*  connectDeviceAndCacheCharacteristic(bleDevice).
+    then(characteristic => startNotifications(characteristic)).
+    catch(error => log(error));  */
+}
+
+function onReconnectButtonClick() {
+  if (!bleDevice) {
+    return;
+  }
+  if (bleDevice.gatt.connected) {
+    log('> Bluetooth Device is already connected');
+    return;
+  }
+  connect()
+  .catch(error => {
+    log('UhOh!1 ' + error);
+  });
+}
+
+document.querySelector('#scan').addEventListener('click', function(event) {
+  event.stopPropagation();
+  event.preventDefault();
+
+  if (isWebBluetoothEnabled()) {
+    ChromeSamples.clearLog();
+    onButtonClick();
+  }
+});
+
+document.querySelector('#bye').addEventListener('click', function(event) {
+  event.stopPropagation();
+  event.preventDefault();
+
+  if (isWebBluetoothEnabled()) {
+    onDisconnectButtonClick();
+  }
+});
+document.querySelector('#byebye').addEventListener('click', function(event) {
+  event.stopPropagation();
+  event.preventDefault();
+
+  if (isWebBluetoothEnabled()) {
+    onDisconnectButtonClick();
+  }
+});
+
+document.querySelector('#reconnect').addEventListener('click', function(event){
+  event.stopPropagation();
+  event.preventDefault();
+
+  if (isWebBluetoothEnabled()) {
+    onReconnectButtonClick();
+  }
+});
+
+log = ChromeSamples.log;
+function isWebBluetoothEnabled() {
+  if (navigator.bluetooth) {
+    return true;
+  } else {
+    ChromeSamples.setStatus('Web Bluetooth API is not available.\n' +
+        'Please make sure the "Experimental Web Platform features" flag is enabled.');
+    return false;
+  }
+}

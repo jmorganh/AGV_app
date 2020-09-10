@@ -1,5 +1,4 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
+/* Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
@@ -24,16 +23,16 @@ body {
     -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
     -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
     -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
-    background-color:#E4E4E4;
-    background-image:linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
-    background-image:-webkit-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
-    background-image:-ms-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
+    background-color:#82ffff;
+    background-image:linear-gradient(top, #a5cfc8 0%, #bbf2ef 51%);
+    background-image:-webkit-linear-gradient(top, #a5cfc8 0%, #bbf2ef 51%);
+    background-image:-ms-linear-gradient(top, #a5cfc8 0%, #bbf2ef 51%);
     background-image:-webkit-gradient(
         linear,
         left top,
         left bottom,
-        color-stop(0, #A7A7A7),
-        color-stop(0.51, #E4E4E4)
+        color-stop(0, #a5cfc8),
+        color-stop(0.51, #bbf2ef)
     );
     background-attachment:fixed;
     font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
@@ -47,7 +46,7 @@ body {
 
 /* Portrait layout (default) */
 .app {
-    background:url(../img/logo.png) no-repeat center top; /* 170px x 200px */
+    background:url(./waterwidget1.png) no-repeat center top; /* 170px x 200px */
     position:absolute;             /* position in the center of the screen */
     left:50%;
     top:50%;
@@ -114,7 +113,110 @@ h1 {
     -webkit-animation:fade 3000ms infinite;
 }
 
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+ul {
+  list-style: none;
+  display: flex;
+}
 
-.mbutton { width:100%; margin:10px; padding: 10px;}
-.center {padding: 100px 30px 10px 10px; text-align: center;}
-.add-button {  position: absolute;  top: 5px;  right: 5px; margin:10px; padding: 5px;}
+li {
+  margin-right: 1rem;
+}
+h1 {
+  color: #e74c3c;
+  margin-bottom: 0.5rem;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  padding: 1rem 0;
+}
+.card {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 15rem auto;
+  height: 15rem;
+  background: #fff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  border-radius: 10px;
+  margin: auto;
+  overflow: hidden;
+}
+.card--avatar {
+  width: 100%;
+  height: 10rem;
+  object-fit: cover;
+}
+.card--title {
+  color: #222;
+  font-weight: 700;
+  text-transform: capitalize;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+.card--link {
+  font-weight: bold;
+  background: #e67264;
+  color: #191818;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+}
+
+.wwlogo { width:100px }
+.mBtn { width:100%; margin:10px; padding: 10px; border-radius: 15px;
+        background-image: url(./wwfavlogo.png);
+        height: 90px;
+        justify-content: center;
+        align-items: center;
+    }
+.center {padding: 1px 30px 10px 10px; text-align: center;}
+.addBtn {  position: absolute;  top: 5px;  right: 5px; margin:10px; padding: 5px;}
+.mBtn:hover {
+    box-shadow:  0 5px 18px 0 rgba(0,0,0,0.19);
+    background-color: #efedeb;
+    border: 2px solid #000;
+    cursor: pointer;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+.column {
+  flex: 20%;
+  max-width: 20%;
+  padding: 4px;
+}
+
+@media (max-width: 992px) {
+    .mBtn{font-size: 14px;
+    }
+}
+@media (max-width: 800px) {
+  .column {
+    flex: 50%;
+    max-width: 50%;
+  }
+  .mBtn{font-size: 16px;
+  }
+}
+
+/* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+@media (max-width: 600px) {
+  .column {
+    flex: 100%;
+    max-width: 100%;
+  }
+  .mBtn{font-size: 18px;
+  }
+}

@@ -1,51 +1,84 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<html   >
-    <head>
-        <title>BlueKee</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <link rel="shortcut icon" href="favicon.ico">
-        <script type="text/javascript" src="js/angular.js" ></script>
-        <script type="text/javascript" src="js/angular-ui-router.js" ></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="Description" content="Simple web pwa-app with BLE.">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="icon" href="./wwfavlogo.png" type="image/png">
+    <link rel="stylesheet" href="./style.css" />
+    <title>Web BLE AGV</title>
+
+    <link rel="manifest" href="./manifest.json" />
+      <!-- ios support -->
+    <link rel="apple-touch-icon" href="./icon-192x192.png" />
+    <link rel="apple-touch-icon" href="./icon-512x512.png" />
+    <meta name="apple-mobile-web-app-status-bar" content="#db4938" />
+    <meta name="theme-color" content="#db4938" />
+  </head>
+
+  <body>
+    <main style="height:100%">
+      <nav>
+        <img alt="widget Logo" class="wwlogo" src=./waterwidget1.png>
+        <h2 style="text-align: center;">BLE Gate Valve </h2>
+        <button id="installBtn" hidden>Install</button>
+        <ul>
+          <li>Home</li>
+          <li>About</li>
+          <li>Blog</li>
+        </ul>
+      </nav>
+      <div id="bleConnection">
+        <p style="text-align: center;">
+          <button id=scan>SCAN</button>
+          <button id=bye >DisCONNECT</button>
+          <button id=reconnect >reCONNECT</button>
+        </p>
 
 
-        <link rel="stylesheet" href="style.css"/>
-        <link rel="manifest" href="manifest.json"/>
+      </div>
+  <div class="row" style="width=100%; height:400px;">
+    <div class="column">
+      <button class="mBtn" onclick="sendIt('<set pos 0>')">Full<br> Close</button>
+      <button class="mBtn" onclick="sendIt('<set pos 1350>')">25%<br> Open</button>
+      <button class="mBtn" onclick="sendIt('<set pos 2350>')">Half<br> Open</button>
+      <button class="mBtn" onclick="sendIt('<set pos 3350>')">75%<br> Open</button>
+      <button class="mBtn" onclick="sendIt('<set pos 4350>')">Full<br> Open</button>
+    </div>
+    <div class="column" style="{flex-grow: 1;}">
+      <button class="mBtn" onclick="sendIt('<?>')">?<br></button>
+      <button class="mBtn" onclick="sendIt('<timestamp>')">Time Stamp<br> </button>
+      <button class="mBtn" onclick="sendIt('<date>')">Get Date</button>
+      <button class="mBtn" onclick="sendIt('<time>')">Get<br> Time</button>
+      <button class="mBtn" onclick="setIt('time')">Set<br> Time</button>
+    </div>
+    <div class="column" style="{flex-grow: 1;}">
+      <button class="mBtn" onclick="setIt('position')">Goto Position </button>
+      <button class="mBtn" onclick="sendIt('<demo>')">open CloseA </button>
+      <button class="mBtn" onclick="sendIt('<demo1>'">open CloseB </button>
+      <button class="mBtn" onclick="sendIt('<readanalog>')">Analog Read</button>
+      <button class="mBtn" id="byebye">Dis-<br>connect</button>
+    </div>
 
-    </head>
-    <body ng-app="BluKee" ng-cloak>
+    <div class="column" style="{flex-grow: 2;}">
+      <div id="input-bar" style="height: 35%; width:90%">
+        <label for="inpVar">For position / time</label>
+        <input id="inpVar" class="mBtn" style="width:90%;" placeholder="input 13 15 for 1:15pm" />
+        <button class="mBtn" onclick="sendIt('<set poshome>')">Reset Home</button>
+        <br> LOG Section
+      </div>
+      <div id="output" style="overflow:auto; text-align:left; margin-left: 10px; max-height: 55%">
+        <div id="content"></div>
+        <div id="status"></div>
+        <pre id="log"></pre>
+      </div>
+    </div>
+   </div>
 
-        <div id="navigation" ui-view="navigation"></div>
 
-        <div id="contentMain">
-            <div id="content" ui-view="contentMain"></div>
-        </div>
-
-
-        <!-- The core Firebase JS SDK is always required and must be listed first -->
-        <!-- <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js"></script>
-
-        <script type="text/javascript">
-          var firebaseConfig = {
-              apiKey: "AIzaSyDbhKmoh-XwfF0m-m3Ib5LfiaDFrum6KR8",
-              authDomain: "agv-app-6c0d0.firebaseapp.com",
-              databaseURL: "https://agv-app-6c0d0.firebaseio.com",
-              projectId: "agv-app-6c0d0",
-              storageBucket: "agv-app-6c0d0.appspot.com",
-              messagingSenderId: "301323924383",
-              appId: "1:301323924383:web:57112cd881c0bef0b383aa"
-          };
-        </script>
-
-        <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-database.js"></script> -->
-
-        <!-- TODO: Add SDKs for Firebase products that you want to use
-            https://firebase.google.com/docs/web/setup#available-libraries -->
-            <!-- <script type="text/javascript" src="js/firebase.js"></script> -->
-
-            <button class="add-button">Add to home screen</button>
-    </body>
-
-    <script type="text/javascript" src="app.js"></script>
-
+   </main>
+    <script src="./app.js"></script>
+  </body>
 </html>
