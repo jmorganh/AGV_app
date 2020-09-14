@@ -183,7 +183,7 @@ h1 {
 }
 
 /* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
-@media (max-width: 600px) {
+/* @media (max-width: 600px) {
   .column {
     flex: 100%;
     max-width: 100%;
@@ -193,4 +193,4 @@ h1 {
   .mBtn{
     font-size: 16px;
   }
-}
+} */
