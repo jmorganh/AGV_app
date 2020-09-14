@@ -159,6 +159,14 @@ h1 {
     border: 2px solid #000;
     cursor: pointer;
 }
+.menuBtn {
+  margin:8px;
+  padding: 8px;
+  border-radius: 8px;
+  height: 35px;
+  justify-content: center;
+  align-items: center;
+}
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -179,8 +187,8 @@ h1 {
     max-width:50%;
   }
   .mBtn{font-size: 14px;
-    margin:3px;
-    padding: 3px;
+    width:95%;
+
   }
 }
 
