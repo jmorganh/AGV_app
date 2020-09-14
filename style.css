@@ -144,7 +144,7 @@ h1 {
 .wwlogo { width:100px }
 .mBtn {
     width:95%;
-    margin:8px;
+    margin:5px;
     padding: 8px;
     border-radius: 15px;
     height: 70px;
@@ -188,7 +188,6 @@ h1 {
   }
   .mBtn{font-size: 14px;
     width:95%;
-
   }
 }
 
