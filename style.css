@@ -181,7 +181,7 @@ h1 {
     .mBtn{font-size: 12px;
     }
 }
-@media (max-width: 800px) {
+@media (max-width: 600px) {
   .column {
     flex: 50%;
     max-width:50%;
