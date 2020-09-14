@@ -142,11 +142,14 @@ h1 {
 }
 
 .wwlogo { width:100px }
-.mBtn { width:100%; margin:8px; padding: 8px; border-radius: 15px;
-        background-image: url(./wwfavlogo.png);
-        height: 70px;
-        justify-content: center;
-        align-items: center;
+.mBtn {
+    width:95%;
+    margin:8px;
+    padding: 8px;
+    border-radius: 15px;
+    height: 70px;
+    justify-content: center;
+    align-items: center;
     }
 .center {padding: 1px 30px 10px 10px; text-align: center;}
 .addBtn {  position: absolute;  top: 5px;  right: 5px; margin:10px; padding: 5px;}
@@ -162,9 +165,8 @@ h1 {
   padding: 4px;
 }
 .column {
-  flex: 20%;
-  max-width: 20%;
-  padding: 4px;
+  flex: 33%;
+  max-width: 33%;
 }
 
 @media (max-width: 992px) {
@@ -173,8 +175,8 @@ h1 {
 }
 @media (max-width: 800px) {
   .column {
-    flex: 40%;
-    max-width:40%;
+    flex: 50%;
+    max-width:50%;
   }
   .mBtn{font-size: 14px;
     margin:3px;

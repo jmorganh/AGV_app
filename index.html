@@ -39,7 +39,7 @@
 
 
       </div>
-  <div class="row" style="width=100%; height:400px;">
+  <div class="row">
     <div class="column">
       <button class="mBtn" onclick="sendIt('<set pos 0>')">Full<br> Close</button>
       <button class="mBtn" onclick="sendIt('<set pos 1350>')">25%<br> Open</button>
@@ -47,35 +47,38 @@
       <button class="mBtn" onclick="sendIt('<set pos 3350>')">75%<br> Open</button>
       <button class="mBtn" onclick="sendIt('<set pos 4350>')">Full<br> Open</button>
     </div>
-    <div class="column" style="{flex-grow: 1;}">
+    <div class="column">
       <button class="mBtn" onclick="sendIt('<?>')">?<br></button>
       <button class="mBtn" onclick="sendIt('<timestamp>')">Time Stamp<br> </button>
       <button class="mBtn" onclick="sendIt('<date>')">Get Date</button>
       <button class="mBtn" onclick="sendIt('<time>')">Get<br> Time</button>
       <button class="mBtn" onclick="setIt('time')">Set<br> Time</button>
     </div>
-    <div class="column" style="{flex-grow: 1;}">
+    <div class="column">
       <button class="mBtn" onclick="setIt('position')">Goto Position </button>
       <button class="mBtn" onclick="sendIt('<demo>')">open CloseA </button>
       <button class="mBtn" onclick="sendIt('<demo1>'">open CloseB </button>
       <button class="mBtn" onclick="sendIt('<readanalog>')">Analog Read</button>
       <button class="mBtn" id="byebye">Dis-<br>connect</button>
     </div>
-
-    <div class="column" style="{flex-grow: 2;}">
-      <div id="input-bar" style="height: 35%; width:90%">
+</div>
+    <div>
+      <div style="text-align: center;">
         <label for="inpVar">For position / time</label>
-        <input id="inpVar" class="mBtn" style="width:90%;" placeholder="input 13 15 for 1:15pm" />
-        <button class="mBtn" onclick="sendIt('<set poshome>')">Reset Home</button>
-        <br> LOG Section
       </div>
-      <div id="output" style="overflow:auto; text-align:left; margin-left: 10px; max-height: 55%">
+
+        <input id="inpVar" class="mBtn" placeholder="input 13 15 for 1:15pm" />
+        <button class="mBtn" onclick="sendIt('<set poshome>')">Reset Home</button>
+          <div style="text-align: center;">
+            <label>LOG Section</label>
+          </div>
+      <div id="output">
         <div id="content"></div>
         <div id="status"></div>
         <pre id="log"></pre>
       </div>
     </div>
-   </div>
+
 
 
    </main>
